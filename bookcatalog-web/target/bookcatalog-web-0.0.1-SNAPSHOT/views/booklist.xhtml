@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head></h:head>
+<body>
+	<ui:composition template="/resources/common/Layout.xhtml">
+		<ui:define name="content">
+
+			<h:form id="bookForm">
+
+				<a4j:commandLink styleClass="no-decor"
+					oncomplete="#{rich:component('createPane')}.show()"
+					render="createForm">
+					<h:graphicImage library="images" name="new.gif" alt="new"
+						height="20" width="auto" />
+					<f:actionListener binding="#{beanBook.initAuthors()}" />
+				</a4j:commandLink>
+
+				<a4j:commandLink
+					oncomplete="#{rich:component('confirmPane')}.show()"
+					render="confirmForm">
+					<h:graphicImage library="images" name="delete.gif" alt="edit"
+						height="20" width="auto" />
+				</a4j:commandLink>
+
+
+
+				<rich:dataTable value="#{beanBook.books}" var="book"
+					iterationStatusVar="it" id="booktable" rows="15"
+					style="width: 100%;" sortMode="single">
+
+					<rich:column width="2%">
+						<f:facet name="header">
+							<h:selectBooleanCheckbox value="#{beanBook.select}"
+								onclick="#{beanBook.selectAll()}">
+								<a4j:ajax event="change" render="booktable" execute="@this" />
+							</h:selectBooleanCheckbox>
+						</f:facet>
+						<h:selectBooleanCheckbox value="#{book.selected}" />
+					</rich:column>
+
+					<rich:column sortBy="#{book.name}">
+						<f:facet name="header">
+							<h:outputText value="Name" />
+						</f:facet>
+						<h:link value="#{book.name}" outcome="/views/book.xhtml">
+							<f:param name="id" value="#{book.bookId}" />
+						</h:link>
+					</rich:column>
+					<rich:column
+						filterExpression="#{authorFilter.getFilterAuthorImpl(book)}"
+						filterType="custom">
+						<f:facet name="header">
+							<h:outputText value="Authors" />
+							<br />
+							<h:inputText value="#{authorFilter.authorFilter}" width="30px">
+								<a4j:ajax event="change" render="booktable info" execute="@this" />
+							</h:inputText>
+						</f:facet>
+						<a4j:repeat value="#{book.authors}" var="author" id="repeat">
+							<h:link value="#{author.firstName} #{author.secondName}"
+								outcome="/views/author.xhtml">
+								<f:param name="id" value="#{author.authorId}" />
+							</h:link>
+							<br />
+						</a4j:repeat>
+					</rich:column>
+					<rich:column width="80px"
+						filterExpression="#{isbnFilter.getIsbnFilterImpl(book)}"
+						filterType="custom">
+						<f:facet name="header">
+							<h:outputText value="Isbn" />
+							<br />
+							<h:inputText value="#{isbnFilter.isbnFilter}" width="30px">
+								<a4j:ajax event="change" render="booktable" execute="@this" />
+							</h:inputText>
+						</f:facet>
+						<h:outputText value="#{book.isbn}" />
+					</rich:column>
+					<rich:column sortBy="#{book.publisher}">
+						<f:facet name="header">
+							<h:outputText value="Publisher" />
+						</f:facet>
+						<h:outputText value="#{book.publisher}" />
+					</rich:column>
+
+					<rich:column
+						filterExpression="#{ratingFilter.getRatingFilterImpl(book)}"
+						filterType="custom">
+						<f:facet name="header">
+							<h:panelGroup>
+								<h:outputText value="Rating:" />
+								<br />
+								from
+								<h:selectOneMenu value="#{ratingFilter.minRatingFilter}">
+									<f:selectItems value="#{ratingFilter.firstRatingOptions}" />
+									<a4j:ajax event="change" render="booktable" execute="@this" />
+								</h:selectOneMenu>
+								to
+								<h:selectOneMenu value="#{ratingFilter.maxRatingFilter}">
+									<f:selectItems value="#{ratingFilter.secondRatingOptions}" />
+									<a4j:ajax event="change" render="booktable" execute="@this" />
+								</h:selectOneMenu>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText value="#{book.averageRating}" />
+					</rich:column>
+
+					<rich:column sortBy="#{book.yearPublished}">
+						<f:facet name="header">Year</f:facet>
+						<h:outputText value="#{book.yearPublished}" />
+					</rich:column>
+
+					<rich:column>
+						<a4j:commandLink styleClass="no-decor"
+							oncomplete="#{rich:component('editPane')}.show()"
+							render="editForm">
+							<h:graphicImage library="images" name="edit.gif" alt="edit"
+								height="20" width="auto" />
+							<f:actionListener
+								binding="#{beanBook.initCurrentBook(book.bookId)}" />
+							<f:actionListener binding="#{beanBook.initAuthors()}" />
+						</a4j:commandLink>
+					</rich:column>
+					<f:facet name="footer">
+						<rich:dataScroller id="scroller" fastStep="3" />
+					</f:facet>
+				</rich:dataTable>
+
+				<div style="color: blue;" id="info">
+					<h:outputText value="Total book count: #{beanBook.bookSize}">
+					</h:outputText>
+				</div>
+
+			</h:form>
+
+			<rich:popupPanel header="Edit Book" id="editPane"
+				domElementAttachment="parent" width="800" height="400">
+				<h:form id="editForm">
+					<h:panelGrid columns="3" id="editGrid">
+
+						<h:outputText value="Name:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.currentBook.name}" id="name">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="name" />
+
+						<h:outputText value="Publisher:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.currentBook.publisher}"
+							id="publisher">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="publisher" />
+
+						<h:outputText value="ISBN:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.currentBook.isbn}" id="isbn"
+							label="isbn" required="true">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="isbn" id="isbnMessage" ajaxRendered="true" />
+
+						<h:outputText value="Status: " style="font-weight:bold" />
+						<h:selectOneRadio value="#{beanBook.currentBook.status}">
+							<f:selectItems value="#{beanHelper.statusValues}" />
+						</h:selectOneRadio>
+						<h:panelGroup />
+
+						<h:outputText value="Year Published: " style="font-weight:bold" />
+						<h:selectOneMenu id="yearPublished"
+							value="#{beanBook.currentBook.yearPublished}">
+							<f:selectItems value="#{beanHelper.years}" />
+						</h:selectOneMenu>
+
+					</h:panelGrid>
+					<br />
+					<h:outputText value="Authors:" style="font-weight:bold" />
+					<br />
+					<rich:pickList id="authors" converter="#{authorsConverter}"
+						value="#{beanBook.currentBook.authors}"
+						sourceCaption="Available authors" targetCaption="Selected authors"
+						listWidth="165px" listHeight="120px">
+						<f:selectItems value="#{beanBook.authors}" var="author"
+							itemValue="#{author}"
+							itemLabel="#{author.firstName} #{author.secondName}" />
+					</rich:pickList>
+					<br />
+
+					<a4j:commandButton value="Update" action="#{beanBook.updateBook()}"
+						render="booktable" execute="editPane"
+						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('editPane')}.hide();" />
+					<a4j:commandButton value="Cancel"
+						onclick="#{rich:component('editPane')}.hide(); return false;" />
+				</h:form>
+			</rich:popupPanel>
+
+
+			<rich:popupPanel header="Create Book" id="createPane"
+				domElementAttachment="parent" width="800" height="400">
+				<h:form id="createForm">
+					<h:panelGrid columns="3" id="createGrid">
+
+						<h:outputText value="Name:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.newBook.name}" id="name">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="name" />
+
+						<h:outputText value="Publisher:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.newBook.publisher}" id="publisher">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="publisher" />
+
+						<h:outputText value="ISBN:" style="font-weight:bold" />
+						<h:inputText value="#{beanBook.newBook.isbn}" id="isbn"
+							label="isbn" validator="#{validateUniquenessISBN.isExistISBN}"
+							required="true">
+							<f:ajax event="blur" render="isbnMessage" />
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="isbn" id="isbnMessage" ajaxRendered="true" />
+
+						<h:outputText value="Status: " style="font-weight:bold" />
+						<h:selectOneRadio value="#{beanBook.newBook.status}" id="status">
+							<f:selectItems value="#{beanHelper.statusValues}" />
+						</h:selectOneRadio>
+						<h:panelGroup />
+
+						<h:outputText value="Year Published " style="font-weight:bold" />
+						<h:selectOneMenu id="yearPublished"
+							value="#{beanBook.newBook.yearPublished}">
+							<f:selectItems value="#{beanHelper.years}" />
+						</h:selectOneMenu>
+
+					</h:panelGrid>
+					<br />
+					<h:outputText value="Authors:" style="font-weight:bold" />
+					<br />
+					<rich:message for="authors" id="authorsMessage" ajaxRendered="true" />
+					<rich:pickList id="authors" converter="#{authorsConverter}"
+						value="#{beanBook.newBook.authors}"
+						sourceCaption="Available authors" targetCaption="Selected authors"
+						listWidth="165px" listHeight="120px"
+						validator="#{beanBook.isExistAuthors}">
+						<f:selectItems value="#{beanBook.authors}" var="author"
+							itemValue="#{author}"
+							itemLabel="#{author.firstName} #{author.secondName}" />
+						<f:ajax event="blur" render="authorsMessage" />
+					</rich:pickList>
+					<br />
+
+					<a4j:commandButton value="Create" action="#{beanBook.createBook()}"
+						render="bookForm" execute="createPane"
+						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('createPane')}.hide();" />
+					<a4j:commandButton value="Cancel" render="createGrid"
+						onclick="#{rich:component('createPane')}.hide(); return false;" />
+				</h:form>
+			</rich:popupPanel>
+
+			<rich:popupPanel id="confirmPane" autosized="true">
+				<h:form id="confirmForm">
+					<h:outputText style="font-weight:bold;"
+						value="Are you sure you want to delete next book(s)?:" />
+					<br />
+					
+					<a4j:repeat value="#{beanBook.selectedBooks()}" var="book"
+						id="repeat">
+						<h:outputText value="#{book.name}" style="text-align:center;"/>
+						<br />
+					</a4j:repeat>
+					<br />
+					
+					
+					<a4j:commandButton value="Cancel"
+						onclick="#{rich:component('confirmPane')}.hide(); return false;" />
+					<a4j:commandButton value="Delete"
+						action="#{beanBook.removeSelected()}" render="bookForm"
+						execute="confirmPane"
+						oncomplete="#{rich:component('confirmPane')}.hide();" />
+				</h:form>
+			</rich:popupPanel>
+
+
+
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" verbose="0" name="Failed suite [Suite]">
+  <test name="Nopackage">
+    <packages>
+      <package name="com.softserve.manager.test"/>
+    </packages>
+    <classes>
+      <class name="com.softserve.manager.test.AuthorTest"/>
+      <class name="com.softserve.manager.test.BookTest"/>
+      <class name="com.softserve.manager.test.ReviewTest"/>
+    </classes>
+  </test> <!-- Nopackage -->
+</suite> <!-- Failed suite [Suite] -->

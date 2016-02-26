@@ -1,0 +1,12 @@
+com\softserve\model\Author.class
+com\softserve\model\Review.class
+com\softserve\dao\impl\ReviewDAOImpl.class
+com\softserve\dao\impl\AbstractGenericDAOImpl.class
+com\softserve\model\Status.class
+com\softserve\dao\BookDAO.class
+com\softserve\dao\GenericDAO.class
+com\softserve\dao\impl\BookDAOImpl.class
+com\softserve\model\Book.class
+com\softserve\dao\impl\AuthorDAOImpl.class
+com\softserve\dao\AuthorDAO.class
+com\softserve\dao\ReviewDAO.class

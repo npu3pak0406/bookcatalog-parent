@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+	<review reviewId="101" commenterName="Test1" modified="false" createDate="2014-02-03 19:17:13"/>
+	<review reviewId="102" commenterName="Test2" modified="false" createDate="2014-02-03 19:17:13"/>
+</dataset>

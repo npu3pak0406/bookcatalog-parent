@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head></h:head>
+<h:body>
+
+	<ui:composition template="/resources/common/Layout.xhtml">
+		<ui:define name="content">
+
+			<h:form id="authorform">
+				<a4j:commandLink styleClass="no-decor"
+					oncomplete="#{rich:component('createPane')}.show()"
+					render="createForm">
+					<h:graphicImage library="images" name="new.gif" alt="edit"
+						height="20" width="auto" />
+				</a4j:commandLink>
+
+				<a4j:commandLink
+					oncomplete="#{rich:component('confirmPane')}.show()"
+					render="confirmForm">
+					<h:graphicImage library="images" name="delete.gif" alt="delete"
+						height="20" width="auto" />
+				</a4j:commandLink>
+
+
+				<rich:dataTable value="#{authorBean.authors}" var="author"
+					iterationStatusVar="it" id="table" rows="15" sortMode="single"
+					style="width: 100%;">
+
+					<rich:column width="2%">
+						<f:facet name="header">
+							<h:selectBooleanCheckbox value="#{authorBean.select}"
+								onclick="#{authorBean.selectAll()}">
+								<a4j:ajax event="change" render="table" execute="@this" />
+							</h:selectBooleanCheckbox>
+						</f:facet>
+						<h:selectBooleanCheckbox value="#{author.selected}" />
+					</rich:column>
+
+					<rich:column sortBy="#{author.firstName}">
+						<f:facet name="header">
+							<h:outputText value="Author name">
+							</h:outputText>
+						</f:facet>
+						<h:link value="#{author.firstName} #{author.secondName}"
+							outcome="/views/author.xhtml">
+							<f:param name="id" value="#{author.authorId}" />
+						</h:link>
+					</rich:column>
+					<rich:column sortBy="#{author.createDate}">
+						<f:facet name="header">
+							<h:outputText value="Create date" />
+						</f:facet>
+						<h:outputText value="#{author.createDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</rich:column>
+
+					<rich:column sortBy="#{author.books.size()}">
+						<f:facet name="header">
+							<h:outputText value="Book count" />
+						</f:facet>
+						<h:outputText value="#{author.books.size()}">
+						</h:outputText>
+					</rich:column>
+
+					<rich:column sortBy="#{author.averageRating}">
+						<f:facet name="header">
+							<h:outputText value="Rating:" />
+						</f:facet>
+						<h:outputText value="#{author.averageRating}" />
+					</rich:column>
+
+					<rich:column>
+						<a4j:commandLink styleClass="no-decor"
+							oncomplete="#{rich:component('editPane')}.show()"
+							render="editAuthorForm">
+							<h:graphicImage library="images" name="edit.gif" alt="edit"
+								height="20" width="auto" />
+							<f:actionListener
+								binding="#{authorBean.initCurrentAuthor(author.authorId)}" />
+							<f:actionListener binding="#{authorBean.initBooks()}" />
+						</a4j:commandLink>
+					</rich:column>
+					<f:facet name="footer">
+						<rich:dataScroller id="scroller" fastStep="3" />
+					</f:facet>
+				</rich:dataTable>
+
+				<div style="color: blue;" id="info">
+					<h:outputText
+						value="Total number of authors: #{authorBean.authorsSize}">
+					</h:outputText>
+				</div>
+
+			</h:form>
+
+			<rich:popupPanel header="Edit Author" id="editPane"
+				domElementAttachment="parent" height="150" width="500">
+				<h:form id="editAuthorForm">
+					<h:panelGrid columns="3" id="editGrid">
+
+						<h:outputText value="First Name:" />
+						<h:inputText value="#{authorBean.currentAuthor.firstName}"
+							id="firstName">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="firstName" />
+
+						<h:outputText value="Second Name:" />
+						<h:inputText value="#{authorBean.currentAuthor.secondName}"
+							id="secondName">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="secondName" />
+
+					</h:panelGrid>
+
+					<br />
+					<a4j:commandButton value="Update"
+						action="#{authorBean.updateAuthor()}" render="authorform"
+						execute="editPane"
+						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('editPane')}.hide();" />
+					<a4j:commandButton value="Cancel"
+						onclick="#{rich:component('editPane')}.hide(); return false;" />
+				</h:form>
+			</rich:popupPanel>
+
+
+			<rich:popupPanel header="Create Author" id="createPane"
+				domElementAttachment="parent" height="150" width="500">
+				<h:form id="createForm">
+					<h:panelGrid columns="3" id="createGrid">
+
+						<h:outputText value="First Name:" />
+						<h:inputText value="#{authorBean.newAuthor.firstName}"
+							id="firstName">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="firstName" />
+
+						<h:outputText value="Second Name:" />
+						<h:inputText value="#{authorBean.newAuthor.secondName}"
+							id="secondName">
+							<rich:validator />
+						</h:inputText>
+						<rich:message for="secondName" />
+
+					</h:panelGrid>
+					<br />
+					<a4j:commandButton value="Create"
+						action="#{authorBean.createAuthor()}" render="authorform"
+						execute="createPane"
+						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('createPane')}.hide();" />
+					<a4j:commandButton value="Cancel"
+						onclick=" #{rich:component('createPane')}.hide(); return false;" />
+				</h:form>
+			</rich:popupPanel>
+
+
+			<rich:popupPanel id="confirmPane" autosized="true">
+				<h:form id="confirmForm">
+					<h:outputText style="font-weight:bold;"
+						value="Are you sure you want to delete next author(s)?:" />
+					<br />
+					<a4j:repeat value="#{authorBean.selectedAuthors()}" var="author"
+						id="repeat">
+						<h:outputText value="#{author.firstName} #{author.secondName}"
+							style="text-align:center;" />
+						<br />
+					</a4j:repeat>
+					<br />
+					<h:outputLabel style="color:red;"
+						value="If you want remove authors(s) they should n't have books!"
+						rendered="#{authorBean.checkAuthorRemove()}" />
+					<br />
+					<a4j:commandButton value="Cancel"
+						onclick="#{rich:component('confirmPane')}.hide(); return false;" />
+					<a4j:commandButton value="Delete"
+						disabled="#{authorBean.checkAuthorRemove()}"
+						action="#{authorBean.removeSelected}" render="authorform"
+						execute="confirmPane"
+						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('confirmPane')}.hide();" />
+				</h:form>
+			</rich:popupPanel>
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

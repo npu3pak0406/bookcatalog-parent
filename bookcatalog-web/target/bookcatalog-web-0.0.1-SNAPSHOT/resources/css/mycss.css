@@ -1,0 +1,33 @@
+.image {
+	width: 20px;
+	height: 20px;
+}
+
+.pager a {
+	margin-left: 5px;
+	margin-top: 50px;
+}
+
+.pager {
+	margin-left: 15px;
+	width: 100%;
+	float: left;
+}
+
+.pager .selected_page {
+	color: red;
+}
+
+#left {
+	width: 300px;
+	float: left;
+}
+
+#right {
+	width: 300px;
+	float: right;
+}
+
+.rf-msg-ftl {
+	color: blue;
+}

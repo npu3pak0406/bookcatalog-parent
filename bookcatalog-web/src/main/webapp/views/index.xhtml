@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
+
+<h:head>
+
+ <title>Book Catalog</title>
+
+</h:head>
+<h:body>
+
+	<ui:composition template="/resources/common/Layout.xhtml">
+		<ui:define name="content">
+
+			<h:outputText value="TOP 10 Books" />
+
+			<rich:dataTable value="#{beanBook.findTopBooks()}" var="book"
+				iterationStatusVar="it" id="booktable" rows="10"
+				style="width: 100%;">
+				<rich:column>
+					<f:facet name="header">#</f:facet>
+               			 #{it.index+1}
+            	</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<h:link value="#{book.name}" outcome="/views/book.xhtml">
+						<f:param name="id" value="#{book.bookId}" />
+					</h:link>
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Authors" />
+					</f:facet>
+					<a4j:repeat value="#{book.authors}" var="author" id="repeat">
+						<h:link value="#{author.firstName} #{author.secondName}"
+							outcome="/views/author.xhtml">
+							<f:param name="id" value="#{author.authorId}" />
+						</h:link>
+						<br />
+					</a4j:repeat>
+				</rich:column>
+				<rich:column width="80px">
+					<f:facet name="header">
+						<h:outputText value="Isbn" />
+					</f:facet>
+					<h:outputText value="#{book.isbn}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Publisher" />
+					</f:facet>
+					<h:outputText value="#{book.publisher}" />
+				</rich:column>
+
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Rating:" />
+					</f:facet>
+					<h:outputText value="#{book.averageRating}" />
+				</rich:column>
+
+				<rich:column>
+					<f:facet name="header">Year Published</f:facet>
+					<h:outputText value="#{book.yearPublished}">
+						<f:convertDateTime pattern="yyyy" />
+					</h:outputText>
+				</rich:column>
+			</rich:dataTable>
+
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>
+
+
+

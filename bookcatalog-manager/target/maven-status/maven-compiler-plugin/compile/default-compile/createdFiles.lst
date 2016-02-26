@@ -1,0 +1,6 @@
+com\softserve\manager\AuthorManager.class
+com\softserve\manager\impl\BookManagerImpl.class
+com\softserve\manager\BookManager.class
+com\softserve\manager\impl\AuthorManagerImpl.class
+com\softserve\manager\ReviewManager.class
+com\softserve\manager\impl\ReviewManagerImpl.class
