@@ -19,10 +19,6 @@ public class BookDTO {
 	private List<AuthorDTO> authors = new ArrayList<AuthorDTO>();
 	private List<ReviewDTO> reviews = new ArrayList<ReviewDTO>();
 
-	public List<ReviewDTO> getReviews() {
-		return reviews;
-	}
-
 	public BookDTO() {
 
 	}
@@ -49,10 +45,6 @@ public class BookDTO {
 
 	public void setYearPublished(Integer yearPublished) {
 		this.yearPublished = yearPublished;
-	}
-
-	public void setReviews(List<ReviewDTO> reviews) {
-		this.reviews = reviews;
 	}
 
 	public String getIsbn() {
@@ -93,6 +85,14 @@ public class BookDTO {
 
 	public void setAuthors(List<AuthorDTO> authors) {
 		this.authors = authors;
+	}
+
+	public List<ReviewDTO> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(List<ReviewDTO> reviews) {
+		this.reviews = reviews;
 	}
 
 	public Date getCreateDate() {

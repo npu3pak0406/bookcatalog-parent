@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
+import com.softserve.manager.BookManager;
 import com.softserve.model.Book;
 
 @ManagedBean
@@ -16,10 +18,13 @@ public class RatingFilter implements Serializable {
 
 	private static final long serialVersionUID = -3344489645281112447L;
 
-	private Long minRatingFilter = new Long(0);
-	private Long maxRatingFilter = new Long(10);
-	private Long firstUsedFilter = new Long(0);
-	private Long secondUsedFilter = new Long(10);
+	@EJB
+	private BookManager bookManager;
+
+	private Double minRatingFilter = new Double(0);
+	private Double maxRatingFilter = new Double(10);
+	private Double firstUsedFilter = new Double(0);
+	private Double secondUsedFilter = new Double(10);
 
 	private List<Long> firstRatingOptions = new ArrayList<Long>();
 	private List<Long> secondRatingOptions = new ArrayList<Long>();
@@ -32,13 +37,13 @@ public class RatingFilter implements Serializable {
 	}
 
 	public boolean getRatingFilterImpl(Object book) {
+
 		getMaxMinFilters();
 		Book currentBook = (Book) book;
-		Long minRating = getFirstUsedFilter();
-		Long maxRating = getSecondUsedFilter();
-		if ((minRating == null || minRating == 0
-				|| minRating.compareTo(currentBook.getAverageRating().longValue()) <= 0)
-				&& (maxRating == null || maxRating.compareTo(currentBook.getAverageRating().longValue()) >= 0)) {
+		Double minRating = getFirstUsedFilter();
+		Double maxRating = getSecondUsedFilter();
+		if ((minRating == null || minRating == 0 || minRating.compareTo(currentBook.getAverageRating()) <= 0)
+				&& (maxRating == null || maxRating.compareTo(currentBook.getAverageRating()) >= 0)) {
 			return true;
 		}
 		return false;
@@ -77,8 +82,8 @@ public class RatingFilter implements Serializable {
 
 		if ((minRat != null) && (maxRat != null)) {
 
-			minRatingFilter = Long.parseLong(minRat);
-			maxRatingFilter = Long.parseLong(maxRat);
+			minRatingFilter = Double.parseDouble(minRat);
+			maxRatingFilter = Double.parseDouble(maxRat);
 		}
 	}
 
@@ -98,36 +103,40 @@ public class RatingFilter implements Serializable {
 		this.secondRatingOptions = secondRatingOptions;
 	}
 
-	public Long getMinRatingFilter() {
+	public Double getMinRatingFilter() {
 		return minRatingFilter;
 	}
 
-	public void setMinRatingFilter(Long minRatingFilter) {
+	public void setMinRatingFilter(Double minRatingFilter) {
 		this.minRatingFilter = minRatingFilter;
 	}
 
-	public Long getMaxRatingFilter() {
+	public Double getMaxRatingFilter() {
 		return maxRatingFilter;
 	}
 
-	public void setMaxRatingFilter(Long maxRatingFilter) {
+	public void setMaxRatingFilter(Double maxRatingFilter) {
 		this.maxRatingFilter = maxRatingFilter;
 	}
 
-	public Long getFirstUsedFilter() {
+	public Double getFirstUsedFilter() {
 		return firstUsedFilter;
 	}
 
-	public void setFirstUsedFilter(Long firstUsedFilter) {
+	public void setFirstUsedFilter(Double firstUsedFilter) {
 		this.firstUsedFilter = firstUsedFilter;
 	}
 
-	public Long getSecondUsedFilter() {
+	public Double getSecondUsedFilter() {
 		return secondUsedFilter;
 	}
 
-	public void setSecondUsedFilter(Long secondUsedFilter) {
+	public void setSecondUsedFilter(Double secondUsedFilter) {
 		this.secondUsedFilter = secondUsedFilter;
+	}
+
+	public int getBookCount() {
+		return bookManager.findBooksCountBitweenRating(getFirstUsedFilter(), getSecondUsedFilter());
 	}
 
 }

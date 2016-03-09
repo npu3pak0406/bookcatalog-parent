@@ -3,13 +3,25 @@ package com.softserve.rest.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+
 import org.apache.commons.collections.CollectionUtils;
 
+import com.softserve.manager.AuthorManager;
 import com.softserve.model.Author;
 import com.softserve.model.Book;
 import com.softserve.model.Review;
 
+
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class Converter {
+
+	@EJB
+	private AuthorManager authorManager;
 
 	public BookDTO convertBookToDTO(Book book) {
 
@@ -94,7 +106,8 @@ public class Converter {
 
 		if (CollectionUtils.isNotEmpty(bookDTO.getAuthors())) {
 			for (AuthorDTO authorDTO : authorsDTO) {
-				authors.add(convertDTOToAuthor(authorDTO));
+				authors.add(authorManager.findById(authorDTO.getAuthorId()));
+
 			}
 		}
 		book.setAuthors(authors);

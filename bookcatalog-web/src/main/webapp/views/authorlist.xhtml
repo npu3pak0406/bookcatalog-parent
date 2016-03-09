@@ -13,6 +13,7 @@
 		<ui:define name="content">
 
 			<h:form id="authorform">
+
 				<a4j:commandLink styleClass="no-decor"
 					oncomplete="#{rich:component('createPane')}.show()"
 					render="createForm">
@@ -28,37 +29,34 @@
 				</a4j:commandLink>
 
 
-				<rich:dataTable value="#{authorBean.authors}" var="author"
+				<rich:dataTable value="#{beanAuthor.authors}" var="author"
 					iterationStatusVar="it" id="table" rows="15" sortMode="single"
 					style="width: 100%;">
 
 					<rich:column width="2%">
 						<f:facet name="header">
-							<h:selectBooleanCheckbox value="#{authorBean.select}"
-								onclick="#{authorBean.selectAll()}">
+							<h:selectBooleanCheckbox value="#{beanAuthor.select}"
+								onclick="#{beanAuthor.selectAll()}">
 								<a4j:ajax event="change" render="table" execute="@this" />
 							</h:selectBooleanCheckbox>
 						</f:facet>
 						<h:selectBooleanCheckbox value="#{author.selected}" />
 					</rich:column>
 
-					<rich:column sortBy="#{author.firstName}">
+					<rich:column
+						filterExpression="#{authorFilter.getFilterAuthorImpl(author)}"
+						filterType="custom">
 						<f:facet name="header">
-							<h:outputText value="Author name">
-							</h:outputText>
+							<h:outputText value="Name" />
+							<br />
+							<h:inputText value="#{authorFilter.authorFilter}" width="30px">
+								<a4j:ajax event="change" render="table" execute="@this" />
+							</h:inputText>
 						</f:facet>
 						<h:link value="#{author.firstName} #{author.secondName}"
 							outcome="/views/author.xhtml">
 							<f:param name="id" value="#{author.authorId}" />
 						</h:link>
-					</rich:column>
-					<rich:column sortBy="#{author.createDate}">
-						<f:facet name="header">
-							<h:outputText value="Create date" />
-						</f:facet>
-						<h:outputText value="#{author.createDate}">
-							<f:convertDateTime pattern="yyyy-MM-dd" />
-						</h:outputText>
 					</rich:column>
 
 					<rich:column sortBy="#{author.books.size()}">
@@ -76,6 +74,15 @@
 						<h:outputText value="#{author.averageRating}" />
 					</rich:column>
 
+					<rich:column sortBy="#{author.createDate}">
+						<f:facet name="header">
+							<h:outputText value="Create date" />
+						</f:facet>
+						<h:outputText value="#{author.createDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</rich:column>
+
 					<rich:column>
 						<a4j:commandLink styleClass="no-decor"
 							oncomplete="#{rich:component('editPane')}.show()"
@@ -83,8 +90,8 @@
 							<h:graphicImage library="images" name="edit.gif" alt="edit"
 								height="20" width="auto" />
 							<f:actionListener
-								binding="#{authorBean.initCurrentAuthor(author.authorId)}" />
-							<f:actionListener binding="#{authorBean.initBooks()}" />
+								binding="#{beanAuthor.initCurrentAuthor(author.authorId)}" />
+							<f:actionListener binding="#{beanAuthor.initBooks()}" />
 						</a4j:commandLink>
 					</rich:column>
 					<f:facet name="footer">
@@ -94,7 +101,7 @@
 
 				<div style="color: blue;" id="info">
 					<h:outputText
-						value="Total number of authors: #{authorBean.authorsSize}">
+						value="Total number of authors: #{beanAuthor.authorsSize}">
 					</h:outputText>
 				</div>
 
@@ -106,14 +113,14 @@
 					<h:panelGrid columns="3" id="editGrid">
 
 						<h:outputText value="First Name:" />
-						<h:inputText value="#{authorBean.currentAuthor.firstName}"
+						<h:inputText value="#{beanAuthor.currentAuthor.firstName}"
 							id="firstName">
 							<rich:validator />
 						</h:inputText>
 						<rich:message for="firstName" />
 
 						<h:outputText value="Second Name:" />
-						<h:inputText value="#{authorBean.currentAuthor.secondName}"
+						<h:inputText value="#{beanAuthor.currentAuthor.secondName}"
 							id="secondName">
 							<rich:validator />
 						</h:inputText>
@@ -123,7 +130,7 @@
 
 					<br />
 					<a4j:commandButton value="Update"
-						action="#{authorBean.updateAuthor()}" render="authorform"
+						action="#{beanAuthor.updateAuthor()}" render="authorform"
 						execute="editPane"
 						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('editPane')}.hide();" />
 					<a4j:commandButton value="Cancel"
@@ -138,14 +145,14 @@
 					<h:panelGrid columns="3" id="createGrid">
 
 						<h:outputText value="First Name:" />
-						<h:inputText value="#{authorBean.newAuthor.firstName}"
+						<h:inputText value="#{beanAuthor.newAuthor.firstName}"
 							id="firstName">
 							<rich:validator />
 						</h:inputText>
 						<rich:message for="firstName" />
 
 						<h:outputText value="Second Name:" />
-						<h:inputText value="#{authorBean.newAuthor.secondName}"
+						<h:inputText value="#{beanAuthor.newAuthor.secondName}"
 							id="secondName">
 							<rich:validator />
 						</h:inputText>
@@ -154,7 +161,7 @@
 					</h:panelGrid>
 					<br />
 					<a4j:commandButton value="Create"
-						action="#{authorBean.createAuthor()}" render="authorform"
+						action="#{beanAuthor.createAuthor()}" render="authorform"
 						execute="createPane"
 						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('createPane')}.hide();" />
 					<a4j:commandButton value="Cancel"
@@ -168,7 +175,7 @@
 					<h:outputText style="font-weight:bold;"
 						value="Are you sure you want to delete next author(s)?:" />
 					<br />
-					<a4j:repeat value="#{authorBean.selectedAuthors()}" var="author"
+					<a4j:repeat value="#{beanAuthor.selectedAuthors()}" var="author"
 						id="repeat">
 						<h:outputText value="#{author.firstName} #{author.secondName}"
 							style="text-align:center;" />
@@ -177,13 +184,13 @@
 					<br />
 					<h:outputLabel style="color:red;"
 						value="If you want remove authors(s) they should n't have books!"
-						rendered="#{authorBean.checkAuthorRemove()}" />
+						rendered="#{beanAuthor.checkAuthorRemove()}" />
 					<br />
 					<a4j:commandButton value="Cancel"
 						onclick="#{rich:component('confirmPane')}.hide(); return false;" />
 					<a4j:commandButton value="Delete"
-						disabled="#{authorBean.checkAuthorRemove()}"
-						action="#{authorBean.removeSelected}" render="authorform"
+						disabled="#{beanAuthor.checkAuthorRemove()}"
+						action="#{beanAuthor.removeSelected}" render="authorform"
 						execute="confirmPane"
 						oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('confirmPane')}.hide();" />
 				</h:form>

@@ -2,15 +2,15 @@ package com.softserve.beans.filter;
 
 import java.io.Serializable;
 
+import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.softserve.model.Book;
 
 @ManagedBean
-@ViewScoped
+@RequestScoped
 public class IsbnFilter implements Serializable {
 
 	private static final long serialVersionUID = -2477896495893340750L;

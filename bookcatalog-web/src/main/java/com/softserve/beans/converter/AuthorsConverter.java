@@ -1,8 +1,10 @@
 package com.softserve.beans.converter;
 
+import java.io.Serializable;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -11,9 +13,11 @@ import com.softserve.manager.AuthorManager;
 import com.softserve.model.Author;
 
 @ManagedBean
-@RequestScoped
-public class AuthorsConverter implements Converter {
+@ViewScoped
+public class AuthorsConverter implements Converter, Serializable {
 
+	private static final long serialVersionUID = 2389663994853057254L;
+	
 	@EJB
 	private AuthorManager authorManager;
 

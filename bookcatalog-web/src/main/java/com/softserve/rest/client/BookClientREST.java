@@ -63,4 +63,10 @@ public class BookClientREST extends ClientRest {
 		}));
 	}
 
+	public List<Book> getAllBooks() {
+		Response response = CLIENT.target(TARGET_URL).path("getallbooks").request().get();
+		return response.readEntity((new GenericType<List<Book>>() {
+		}));
+	}
+
 }

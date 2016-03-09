@@ -13,6 +13,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.softserve</groupId>
+			<artifactId>bookcatalog-dao</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.softserve</groupId>
 			<artifactId>bookcatalog-manager</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -22,7 +27,7 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -40,14 +45,20 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>5.0.7.Final</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.0.7.Final</version>
+			<version>4.3.10.Final</version>
+			<!-- for orderBy -->
+			<exclusions>
+				<exclusion>
+					<groupId>antlr</groupId>
+					<artifactId>antlr</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>provided</scope>
 		</dependency>
-
-
 
 		<!-- MySQL JDBC driver -->
 		<dependency>

@@ -46,7 +46,7 @@
 
 				<rich:popupPanel header="Edit Book" id="editPane"
 					domElementAttachment="parent" width="800" height="400">
-					<h:form id="editForm" enctype="multipart/form-data">
+					<h:form id="editForm">
 						<h:panelGrid columns="3" id="editGrid">
 
 							<h:outputText value="Name:" style="font-weight:bold" />
@@ -64,17 +64,17 @@
 
 							<h:outputText value="ISBN:" style="font-weight:bold" />
 							<h:inputText value="#{beanBook.currentBook.isbn}" id="isbn"
-								label="isbn">
+								label="isbn" required="true">
 								<rich:validator />
 							</h:inputText>
-							<rich:message for="isbn" />
+							<rich:message for="isbn" id="isbnMessage" />
 
 							<h:outputText value="Status: " style="font-weight:bold" />
 							<h:selectOneRadio value="#{beanBook.currentBook.status}">
 								<f:selectItems value="#{beanHelper.statusValues}" />
 							</h:selectOneRadio>
 							<h:panelGroup />
-							
+
 							<h:outputText value="Year Published: " style="font-weight:bold" />
 							<h:selectOneMenu id="yearpublished"
 								value="#{beanBook.currentBook.yearPublished}">
@@ -100,6 +100,8 @@
 							execute="editPane"
 							oncomplete="if (#{facesContext.maximumSeverity == null}) #{rich:component('editPane')}.hide();">
 							<f:param name="id" value="#{beanBook.currentBook.bookId}" />
+							<a4j:param name="isbn" value="#{beanBook.currentBook.isbn}" />
+							<f:actionListener binding="#{validateUniquenessISBN.getISBN()}" />
 						</a4j:commandButton>
 
 						<a4j:commandButton value="Cancel"
@@ -125,16 +127,15 @@
 					<h:panelGroup />
 					<h:outputText value="Year published: " style="font-weight:bold" />
 					<h:outputText value="#{beanBook.currentBook.yearPublished}"
-						id="yearPublished">
-						<f:convertDateTime pattern="yyyy" />
-					</h:outputText>
+						id="yearPublished" />
 					<h:panelGroup />
 					<h:outputText value="ISBN: " style="font-weight:bold" />
 					<h:outputText value="#{beanBook.currentBook.isbn}" id="isbn">
 					</h:outputText>
 					<h:panelGroup />
-					<h:outputText value="Status " style="font-weight:bold" />
-					<h:outputText value="#{beanBook.currentBook.status.label}" id="status">
+					<h:outputText value="Status: " style="font-weight:bold" />
+					<h:outputText value="#{beanBook.currentBook.status.label}"
+						id="status">
 					</h:outputText>
 					<h:panelGroup />
 
@@ -165,12 +166,12 @@
 					</a4j:commandLink>
 				</h:form>
 				<rich:popupPanel header="Add new Review" id="createReviewPane"
-					width="700" height="400">
+					width="500" height="300">
 					<h:form id="newReviewFrom">
 						<h:panelGrid columns="3" id="createGrid">
 							<h:outputText value="Commenter name: " />
 							<h:inputText value="#{beanBook.newReview.commenterName}"
-								id="comentername" size="35">
+								id="comentername">
 								<rich:validator />
 							</h:inputText>
 							<rich:message for="comentername" />
@@ -207,23 +208,20 @@
 				</rich:popupPanel>
 
 				<h:form id="reviewform">
-					<rich:dataTable value="#{beanBook.currentBook.reviews}"
-						var="review" name="reviews" id="reviewtable" rows="5"
-						rendered="#{not empty beanBook.currentBook.reviews}"
-						style="width: 100%; ">
+					<rich:dataTable value="#{beanBook.reviews}" var="review"
+						name="reviews" id="reviewtable" rows="5" style="width: 100%; ">
 						<rich:column style="width: 20%">
 							<f:facet name="header">Title</f:facet>
 							<h:outputText value="#{review.commenterName}"
 								style="font-weight:bold" />
 							<br />
 							<h:outputText value="created: #{review.createDate}">
-								<f:convertDateTime pattern="dd-mm-yyyy HH:mm" />
+								<f:convertDateTime pattern="dd-mm-yyyy" />
 							</h:outputText>
 							<br />
-							<h:outputText rendered="#{review.modified}"
-								value="modifieded: #{review.updatedDay}"
+							<h:outputText value="modifieded: #{review.updatedDay}"
+								rendered="#{review.updatedDay != null}"
 								style="font-style: italic; color: green;" />
-
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">Comment</f:facet>
@@ -262,10 +260,8 @@
 
 			</rich:panel>
 
-			<rich:popupPanel header="Edit Review" autosized="true"
-				id="editReviewPane" domElementAttachment="parent" minWidth="800"
-				minHeight="420"
-				onmaskclick="#{rich:component('editReviewPane')}.hide()">
+			<rich:popupPanel header="Edit Review" id="editReviewPane" width="500"
+				height="300">
 				<h:form id="editReviewForm">
 					<h:panelGrid columns="3" id="editReviewGrid">
 						<h:outputText value="Commenter name:" />
@@ -301,11 +297,11 @@
 
 			<h:form id="removeReviewForm">
 				<a4j:jsFunction name="remove" action="#{beanBook.removeReview()}"
-					render="reviewtable" execute="@this"
+					render="reviewsPane bookDetails" execute="@this"
 					oncomplete="#{rich:component('removeReviewPane')}.hide();">
 					<f:param name="id" value="#{beanBook.currentBook.bookId}" />
+					<f:actionListener binding="#{beanBook.initCurrentBook()}" />
 				</a4j:jsFunction>
-
 
 				<rich:popupPanel id="removeReviewPane" autosized="true">
            			 Are you sure you want to delete the Review?

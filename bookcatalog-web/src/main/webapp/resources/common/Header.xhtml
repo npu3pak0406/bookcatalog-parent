@@ -1,27 +1,37 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich">
 <h:head>
 </h:head>
 
 <body>
 	<ui:composition>
 		<div class="row">
-
 			<div class="col-sm-4">
 				<h:graphicImage library="images" name="stackOfBooks.jpg"
-					styleClass="img-thumbnail" height="80" width="auto" />
+					styleClass="img-thumbnail" height="20" width="auto" />
 			</div>
 			<div class="col-sm-4">
-				<h:link value="HOME" outcome="index" />
+				<h:outputText value="Book Catalog" style="font-size: 36px;" />
 			</div>
+
 			<div class="col-sm-4">
-				<h3>Manage</h3>
 				<ul class="nav nav-tabs">
-					<li><h:link value="Authors" outcome="authorlist" /></li>
-					<li><h:link value="Books" outcome="booklist" /></li>
-					<li><h:link value="Reviews" outcome="reviewlist" /></li>
+					<li><h:link outcome="index">
+							<h:graphicImage library="images" name="home.png" alt="home"
+								height="80" width="auto" />
+						</h:link></li>
+					<li><h:link outcome="authorlist">
+							<h:graphicImage library="images" name="authorlist.jpg"
+								alt="authorlist" height="80" width="auto" />
+						</h:link></li>
+					<li><h:link outcome="booklist">
+							<h:graphicImage library="images" name="booklist.jpg"
+								alt="booklist" height="80" width="auto" />
+						</h:link></li>
 				</ul>
 			</div>
 		</div>

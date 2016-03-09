@@ -17,31 +17,87 @@ import com.softserve.rest.dto.BookDTO;
 @Produces({ MediaType.APPLICATION_JSON })
 @Consumes({ MediaType.APPLICATION_JSON })
 public interface BookServiceREST {
-
+	/**
+	 * Get book by primary key
+	 *
+	 * @param id
+	 *            -book's primary key
+	 * @return Response - book entity
+	 */
 	@GET
 	@Path("{id}")
 	public Response getBook(@PathParam("id") Integer id);
 
+	/**
+	 * Create book
+	 *
+	 * @param bookDTO
+	 *            - bookDTO in parameter request
+	 * @return response status
+	 */
 	@POST
 	public Response createBook(BookDTO bookDTO);
 
+	/**
+	 * Update book;
+	 *
+	 * @param bookDTO
+	 *            - bookDTO in parameter request
+	 * @return response status
+	 */
 	@PUT
 	public Response updateBook(BookDTO bookDTO);
 
+	/**
+	 * Remove book by primary key
+	 *
+	 * @param id
+	 *            - book's primary key
+	 * @return response status
+	 */
 	@DELETE
 	@Path("{id}")
 	public Response removeBook(@PathParam("id") Integer id);
 
+	/**
+	 * Get books by author id
+	 *
+	 * @param id
+	 *            -authors's primary key
+	 * @return Response - List of books
+	 */
 	@GET
 	@Path("getbooksbyauthor/{id}")
 	public Response getBooksByAuthor(@PathParam("id") Integer id);
 
+	/**
+	 * Get books by rating
+	 *
+	 * @param rating
+	 *            -book's rating
+	 * @return Response - List of books
+	 */
 	@GET
 	@Path("getbooksbyrating/{rating}")
 	public Response getBooksByRating(@PathParam("rating") Integer rating);
 
+	/**
+	 * Get books by status
+	 *
+	 * @param status
+	 *            -book's status
+	 * @return Response - List of books
+	 */
 	@GET
 	@Path("getbooksbystatus/{status}")
 	public Response getBooksByStatus(@PathParam("status") String status);
 
+	/**
+	 * Get all books
+	 *
+	 * @return Response - List of books
+	 */
+	@GET
+	@Path("getallbooks")
+	public Response getAllBooks();
 }

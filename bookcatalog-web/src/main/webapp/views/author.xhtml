@@ -14,9 +14,9 @@
 		<ui:define name="content">
 
 			<h:form id="authorform">
-				<f:event type="preRenderView" listener="#{authorBean.loadData()}" />
+				<f:event type="preRenderView" listener="#{beanAuthor.loadData()}" />
 				<rich:panel
-					header="#{authorBean.currentAuthor.firstName} #{authorBean.currentAuthor.secondName}"
+					header="#{beanAuthor.currentAuthor.firstName} #{beanAuthor.currentAuthor.secondName}"
 					id="authorPane">
 
 					<a4j:commandLink styleClass="no-decor"
@@ -24,17 +24,17 @@
 						render="editAuthorForm">
 						<h:graphicImage library="images" name="edit.gif" alt="edit"
 							height="20" width="auto" />
-						<f:actionListener binding="#{authorBean.initBooks()}" />
-						<f:param name="id" value="#{authorBean.currentAuthor.authorId}" />
+						<f:actionListener binding="#{beanAuthor.initBooks()}" />
+						<f:param name="id" value="#{beanAuthor.currentAuthor.authorId}" />
 					</a4j:commandLink>
 
 					<a4j:commandLink styleClass="no-decor"
-						rendered="#{empty authorBean.currentAuthor.books}"
+						disabled="#{not empty beanAuthor.currentAuthor.books}"
 						oncomplete="#{rich:component('confirmPane')}.show()">
 
 						<h:graphicImage library="images" name="delete.gif" alt="edit"
 							height="20" width="auto" />
-						<f:param name="id" value="#{authorBean.currentAuthor.authorId}" />
+						<f:param name="id" value="#{beanAuthor.currentAuthor.authorId}" />
 					</a4j:commandLink>
 
 
@@ -43,22 +43,26 @@
 						<h:form id="editAuthorForm">
 							<h:panelGrid columns="3" id="editGrid">
 								<h:outputText value="First Name:" />
-								<h:inputText value="#{authorBean.currentAuthor.firstName}"
+								<h:inputText value="#{beanAuthor.currentAuthor.firstName}"
 									id="firstName">
+									<rich:validator />
 								</h:inputText>
-								<h:panelGroup />
+								<rich:message for="firstName" />
+
 								<h:outputText value="Second Name:" />
-								<h:inputText value="#{authorBean.currentAuthor.secondName}"
+								<h:inputText value="#{beanAuthor.currentAuthor.secondName}"
 									id="secondName">
+									<rich:validator />
 								</h:inputText>
-								<h:panelGroup />
+								<rich:message for="secondName" />
+
 							</h:panelGrid>
 							<br />
 							<a4j:commandButton value="Update"
-								action="#{authorBean.updateAuthor()}" render="authorform"
+								action="#{beanAuthor.updateAuthor()}" render="authorform"
 								execute="editPane"
-								oncomplete="#{rich:component('editPane')}.hide();">
-								<f:param name="id" value="#{authorBean.currentAuthor.authorId}" />
+								oncomplete="if (#{empty facesContext.maximumSeverity }) #{rich:component('editPane')}.hide();">
+								<f:param name="id" value="#{beanAuthor.currentAuthor.authorId}" />
 							</a4j:commandButton>
 							<a4j:commandButton value="Cancel"
 								onclick="#{rich:component('editPane')}.hide(); return false;" />
@@ -66,52 +70,55 @@
 					</rich:popupPanel>
 
 					<rich:popupPanel id="confirmPane" autosized="true">
-            		Are you sure you want to delete the 
-            		<strong>#{authorBean.currentAuthor.firstName}#{authorBean.currentAuthor.secondName}?</strong>
+            		Are you sure you want to delete the
+            		<br />
+						<strong>#{beanAuthor.currentAuthor.firstName}
+							#{beanAuthor.currentAuthor.secondName}?</strong>
 						<a4j:commandButton value="Cancel"
 							onclick="#{rich:component('confirmPane')}.hide(); return false;" />
 						<a4j:commandButton value="Delete"
-							action="#{authorBean.removeAuthor()}" render="booksPane"
+							action="#{beanAuthor.removeAuthor()}" render="booksPane"
 							execute="confirmPane"
 							oncomplete="#{rich:component('confirmPane')}.hide();" />
 					</rich:popupPanel>
 
 					<h:panelGrid columns="3">
 						<h:outputText value="First name:" style="font-weight:bold" />
-						<h:outputText value="#{authorBean.currentAuthor.firstName}">
+						<h:outputText value="#{beanAuthor.currentAuthor.firstName}">
 						</h:outputText>
 						<h:panelGroup />
 						<h:outputText value="Second name:" style="font-weight:bold" />
-						<h:outputText value="#{authorBean.currentAuthor.secondName}">
+						<h:outputText value="#{beanAuthor.currentAuthor.secondName}">
 						</h:outputText>
 						<h:panelGroup />
 						<h:outputText value="Rating:" style="font-weight:bold" />
-						<h:outputText value="#{authorBean.currentAuthor.averageRating}">
+						<h:outputText value="#{beanAuthor.currentAuthor.averageRating}">
 						</h:outputText>
 						<h:panelGroup />
 					</h:panelGrid>
 
-					<a4j:commandButton value="Back" action="booklist?faces-redirect=true" />
+					<a4j:commandButton value="Back"
+						action="authorlist?faces-redirect=true" />
 
 				</rich:panel>
 				<br />
 				<rich:panel
-					header="#{authorBean.currentAuthor.firstName} #{authorBean.currentAuthor.secondName}'s books"
+					header="#{beanAuthor.currentAuthor.firstName} #{beanAuthor.currentAuthor.secondName}'s books"
 					id="booksPane">
 
-					<rich:dataTable rendered="#{empty authorBean.currentAuthor.books}"
+					<rich:dataTable rendered="#{empty beanAuthor.currentAuthor.books}"
 						rows="5" style="width: 100%;">
 						<f:facet name="header">
 							<h:outputText value="Author has not any books yet" />
 						</f:facet>
 					</rich:dataTable>
 
-					<rich:dataTable value="#{authorBean.currentAuthor.books}"
+					<rich:dataTable value="#{beanAuthor.currentAuthor.books}"
 						style="width: 100%;" var="book" rows="5"
-						rendered="#{not empty authorBean.currentAuthor.books}">
+						rendered="#{not empty beanAuthor.currentAuthor.books}">
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Book name" />
+								<h:outputText value="Name" />
 							</f:facet>
 							<h:link styleClass="link_to_book" value="#{book.name}"
 								outcome="/views/book.xhtml">
@@ -120,13 +127,13 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Book ISBN" />
+								<h:outputText value="ISBN" />
 							</f:facet>
 							<h:outputText value="#{book.isbn}" />
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Book publisher" />
+								<h:outputText value="Publisher" />
 							</f:facet>
 							<h:outputText value="#{book.publisher}" />
 						</rich:column>
@@ -135,6 +142,12 @@
 								<h:outputText value="Rating" />
 							</f:facet>
 							<h:outputText value="#{book.averageRating}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Year" />
+							</f:facet>
+							<h:outputText value="#{book.yearPublished}" />
 						</rich:column>
 						<f:facet name="footer">
 							<rich:dataScroller id="scroller" fastStep="3" />

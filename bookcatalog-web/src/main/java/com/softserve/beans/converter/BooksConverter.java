@@ -23,7 +23,7 @@ public class BooksConverter implements Converter {
 		if (arg2 == null || arg2.isEmpty())
 			return null;
 
-		return bookManager.findBookById(Integer.valueOf(arg2).intValue());
+		return bookManager.findById(Integer.valueOf(arg2).intValue());
 
 	}
 
