@@ -2,7 +2,7 @@ package com.softserve.dao.impl;
 
 import java.io.Serializable;
 
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
@@ -12,15 +12,15 @@ import org.slf4j.LoggerFactory;
 
 import com.softserve.dao.GenericDAO;
 
-@Stateless
-public class AbstractGenericDAOImpl<E, I extends Serializable> implements GenericDAO<E, I> {
+@Stateful
+public abstract class AbstractGenericDAOImpl<E, I extends Serializable> implements GenericDAO<E, I> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGenericDAOImpl.class);
 
 	@PersistenceContext(unitName = "persistence", type = PersistenceContextType.TRANSACTION)
 	protected EntityManager em;
 
-	protected Class<E> entityClass;
+	private Class<E> entityClass;
 
 	public AbstractGenericDAOImpl() {
 	}
@@ -31,7 +31,7 @@ public class AbstractGenericDAOImpl<E, I extends Serializable> implements Generi
 
 	public void create(E entity) {
 		try {
-			LOGGER.info("void create({})", entity.getClass());
+			LOGGER.info("void create({})", entityClass);
 			em.persist(entity);
 		} catch (Exception e) {
 			LOGGER.error("Exception: {}", e);
@@ -47,7 +47,7 @@ public class AbstractGenericDAOImpl<E, I extends Serializable> implements Generi
 
 	public void update(E entity) {
 		try {
-			LOGGER.info("void update({})", entity.getClass());
+			LOGGER.info("void update({})", entityClass);
 			em.merge(entity);
 		} catch (Exception e) {
 			LOGGER.error("Exception: {}", e);

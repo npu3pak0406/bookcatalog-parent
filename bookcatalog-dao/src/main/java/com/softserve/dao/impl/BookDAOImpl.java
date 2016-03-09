@@ -2,29 +2,23 @@ package com.softserve.dao.impl;
 
 import java.util.List;
 
-import javax.ejb.Stateful;
-import javax.persistence.EntityManager;
+import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.softserve.dao.BookDAO;
-import com.softserve.model.Author;
 import com.softserve.model.Book;
 import com.softserve.model.Status;
 
-@Stateful
+@Stateless
 public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implements BookDAO {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(BookDAO.class);
 
-	private static final int TOP_10 = 10;
-
-	@PersistenceContext(unitName = "persistence")
-	private EntityManager em;
+	private static final int TOP_10_BOOKS = 10;
 
 	public BookDAOImpl() {
 		super(Book.class);
@@ -32,26 +26,10 @@ public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implement
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Book> findAllBooksByAuthor(Author a) {
-
-		LOGGER.info("getAllBooksByAuthor(Author {})", a);
-		Query query = em.createNamedQuery(Book.FIND_ALL_BOOKS_BY_AUTHOR);
-		query.setParameter("authorId", a.getAuthorId());
-		List<Book> booklist = (List<Book>) query.getResultList();
-
-		return booklist;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
 	public List<Book> findAllBooks() {
-
 		LOGGER.info("List<Book> returnAllBooks()");
-
 		Query query = em.createNamedQuery(Book.FIND_ALL_BOOKS);
-		List<Book> booklist = (List<Book>) query.getResultList();
-
-		return booklist;
+		return query.getResultList();
 	}
 
 	@Override
@@ -71,18 +49,8 @@ public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implement
 		LOGGER.info("List<Book> getBooksWithRating({})", rating);
 		Query query = em.createNamedQuery(Book.FIND_BOOKS_WITH_RATING);
 		query.setParameter("rating", rating);
-		List<Book> booklist = (List<Book>) query.getResultList();
+		return query.getResultList();
 
-		return booklist;
-	}
-
-	@Override
-	public Book findBookById(Integer id) {
-		LOGGER.info("Book getBookById(Integer{})", id);
-		Query query = em.createNamedQuery(Book.FIND_BOOK_BY_ID);
-		query.setParameter("id", id);
-		Book book = (Book) query.getSingleResult();
-		return book;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,10 +70,13 @@ public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implement
 	}
 
 	@Override
-	public void removeAllbyId(List<Integer> pks) {
-		LOGGER.info("removeAllbyPk(List<Intege> pks)" + " pks:" + pks);
-		for (Integer pk : pks) {
-			em.remove(em.find(entityClass, pk));
+	@SuppressWarnings("unchecked")
+	public void removeBooks(List<Book> books) {
+		LOGGER.info("removeAllbyPk(List<Intege> {})", books);
+		List<Book> bs = em.createQuery("SELECT b FROM Book b WHERE b IN (:books)").setParameter("books", books)
+				.getResultList();
+		for (Book book : bs) {
+			em.remove(book);
 		}
 	}
 
@@ -122,9 +93,8 @@ public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implement
 	public List<Book> findTopBooks() {
 		LOGGER.info("List<Book> findTopBooks()");
 		Query query = em.createNamedQuery(Book.FIND_ALL_BOOKS_SORTED_BY_RATING);
-		query.setMaxResults(TOP_10);
+		query.setMaxResults(TOP_10_BOOKS);
 		return (List<Book>) query.getResultList();
-
 	}
 
 	@Override
@@ -146,9 +116,16 @@ public class BookDAOImpl extends AbstractGenericDAOImpl<Book, Integer> implement
 		LOGGER.info("findBooksByStatus({})", status);
 		Query query = em.createNamedQuery(Book.FIND_BOOKS_BY_STATUS);
 		query.setParameter("status", Status.valueOf(status));
-		List<Book> booklist = (List<Book>) query.getResultList();
+		return query.getResultList();
+	}
 
-		return booklist;
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Book> findBooksByAuthorId(Integer id) {
+		LOGGER.info("findBooksByBookId({})", id);
+		Query query = em.createNamedQuery(Book.FIND_BOOKS_BY_AUTHOR_ID);
+		query.setParameter("id", id);
+		return query.getResultList();
 	}
 
 }

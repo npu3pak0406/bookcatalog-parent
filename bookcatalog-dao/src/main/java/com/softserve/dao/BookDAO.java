@@ -2,22 +2,14 @@ package com.softserve.dao;
 
 import java.util.List;
 
-import javax.ejb.Local;
-
-import com.softserve.model.Author;
 import com.softserve.model.Book;
 
-@Local
+/**
+ * BookDAO interface for facade and read operations
+ * 
+ *
+ */
 public interface BookDAO extends GenericDAO<Book, Integer> {
-
-	/**
-	 * This method returns books by Author
-	 * 
-	 * @param a
-	 *            - author
-	 * @return list of books
-	 */
-	public List<Book> findAllBooksByAuthor(Author a);
 
 	/**
 	 * This method returns all books from data base
@@ -42,15 +34,6 @@ public interface BookDAO extends GenericDAO<Book, Integer> {
 	public List<Book> findBooksWithRating(Double rating);
 
 	/**
-	 * This method returns books by unique field
-	 * 
-	 * @param id
-	 *            - primary key
-	 * @return Book
-	 */
-	public Book findBookById(Integer id);
-
-	/**
 	 * This method returns books for one table page
 	 * 
 	 * @param startingAt
@@ -70,12 +53,12 @@ public interface BookDAO extends GenericDAO<Book, Integer> {
 	public Integer countAllBooks();
 
 	/**
-	 * This method removes books by primary keys
+	 * This method removes books 
 	 * 
-	 * @param pks
-	 *            - list of primary keys which will be removed
+	 * @param books
+	 *            - list of books which will be removed
 	 */
-	public void removeAllbyId(List<Integer> pks);
+	public void removeBooks(List<Book> books);
 
 	/**
 	 * This method returns number of books with identified ratings
@@ -99,6 +82,7 @@ public interface BookDAO extends GenericDAO<Book, Integer> {
 	 * This method search Book by ISBN
 	 * 
 	 * @param isbn
+	 *            - unique number of book
 	 * @return Book
 	 */
 	public Book findBookByISBN(String isbn);
@@ -111,5 +95,8 @@ public interface BookDAO extends GenericDAO<Book, Integer> {
 	 * @return list of books
 	 */
 	public List<Book> findBooksByStatus(String status);
+	
+
+	public List<Book> findBooksByAuthorId(Integer id);
 
 }

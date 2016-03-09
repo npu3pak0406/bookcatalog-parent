@@ -6,6 +6,11 @@ import javax.ejb.Local;
 
 import com.softserve.model.Review;
 
+/**
+ * ReviewDAO interface for facade and read operations
+ * 
+ *
+ */
 @Local
 public interface ReviewDAO extends GenericDAO<Review, Integer> {
 	/**
@@ -15,7 +20,7 @@ public interface ReviewDAO extends GenericDAO<Review, Integer> {
 	 *            - book primary key
 	 * @return list of Reviews
 	 */
-	List<Review> getReviewsByBookId(int id);
+	List<Review> findReviewsByBookId(int id);
 
 	/**
 	 * This method return number of review appropriate book

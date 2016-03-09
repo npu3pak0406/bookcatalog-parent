@@ -14,24 +14,29 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "AUTHOR")
-@NamedQueries({
-		@NamedQuery(name = Author.FIND_ALL_AUTHORS, query = "SELECT a FROM Author a ORDER BY a.firstName DESC, a.secondName"),
-		@NamedQuery(name = Author.FIND_BY_ID, query = "SELECT a FROM Author a WHERE a.authorId=?2"),
-		@NamedQuery(name = Author.FIND_AUTHOR_BY_NAME, query = "SELECT a FROM Author a WHERE a.firstName= :first AND a.secondName= :second"),
-		@NamedQuery(name = Author.COUNT_ALL_AUTHORS, query = "SELECT COUNT(a) FROM Author a") })
+@NamedQueries({ @NamedQuery(name = Author.FIND_ALL_AUTHORS, query = "SELECT a FROM Author a ORDER BY a.firstName"),
+		@NamedQuery(name = Author.FIND_AUTHOR_BY_ID, query = "SELECT a FROM Author a WHERE a.authorId= :id"),
+		@NamedQuery(name = Author.FIND_AUTHORS_BY_BOOK_ID, query = "SELECT a FROM Author a INNER JOIN a.books b where b.bookId = :id"),
+		@NamedQuery(name = Author.FIND_AUTHOR_BY_FIRST_SECOND_NAME, query = "SELECT a FROM Author a WHERE a.firstName= :first AND a.secondName= :second"),
+		@NamedQuery(name = Author.FIND_AUTHORS_COUNT, query = "SELECT COUNT(a) FROM Author a"),
+		@NamedQuery(name = Author.FIND_AUTHORS_BY_RATING, query = "SELECT a FROM Author a WHERE a.averageRating >= :minRating AND a.averageRating< :maxRating"),
+		@NamedQuery(name = Author.REMOVE_AUTHORS, query = "DELETE FROM Author a WHERE a IN (:authors)") })
 
 public class Author {
-	public static final String FIND_BY_ID = "findById";
+
+	public static final String FIND_AUTHORS_BY_BOOK_ID = "findAuthorsByBookId";
+	public static final String FIND_AUTHOR_BY_ID = "findById";
 	public static final String FIND_ALL_AUTHORS = "findAllAuthors";
-	public static final String FIND_AUTHOR_BY_NAME = "findAuthorByName";
-	public static final String COUNT_ALL_AUTHORS = "countALLAuthors";
+	public static final String FIND_AUTHOR_BY_FIRST_SECOND_NAME = "findAuthorByName";
+	public static final String FIND_AUTHORS_COUNT = "countALLAuthors";
+	public static final String FIND_AUTHORS_BY_RATING = "findAuthorsByRating";
+	public static final String REMOVE_AUTHORS = "removeAuthors";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,11 +53,11 @@ public class Author {
 
 	@Column(name = "createDate")
 	private Date createDate;
-
-	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "authors", cascade = CascadeType.DETACH)
+	@OrderBy("name")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "authors", cascade = CascadeType.DETACH)
 	private List<Book> books = new ArrayList<Book>();
 
-	@Column
+	@Column(name = "averageRating")
 	private Double averageRating;
 
 	@Transient

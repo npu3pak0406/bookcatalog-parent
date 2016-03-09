@@ -1,5 +1,15 @@
 package com.softserve.dao;
 
+/**
+ * 
+ * Generic interface for crud operations
+ *
+ * @param <E>
+ *            - entity
+ * @param <I>
+ *            - id
+ */
+
 public interface GenericDAO<E, I> {
 
 	/**
