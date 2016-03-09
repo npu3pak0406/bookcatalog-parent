@@ -3,7 +3,7 @@
 
 <dataset>
 	
-	<review reviewId="101" commenterName="Test"   modified="true" createDate="2014-02-03 19:17:13"/>
-	<review reviewId="102" commenterName="Test2"  modified="false" createDate="2014-02-03 19:17:13"/>
+	<review reviewId="301" commenterName="Test"   createDate="2014-02-03 19:17:13"/>
+	<review reviewId="302" commenterName="Test2"  createDate="2014-02-03 19:17:13"/>
 
 </dataset>

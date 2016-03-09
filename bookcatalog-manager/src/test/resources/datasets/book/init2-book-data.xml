@@ -2,8 +2,9 @@
 
 <dataset>
 
-	<book bookId="101" name="Test1" createDate="2014-02-03 19:17:13" average_rating = "0"/>
+	<book bookId="301" name="Test1" createDate="2014-02-03 19:17:13"
+		averageRating="10" />
 
-	<review reviewId = "101" bookId ="101" rating="10" commenterName="Nice" modified="false"/>
+	<review reviewId="301" bookId="301" rating="10" commenterName="Nice" />
 
 </dataset>

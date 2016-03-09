@@ -17,10 +17,17 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- Arqullian -->
 		<dependency>
@@ -39,8 +46,8 @@
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-arquillian-container-managed</artifactId>
 			<version>8.2.1.Final</version>
+			<scope>test</scope>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.jboss.arquillian.extension</groupId>
@@ -109,7 +116,7 @@
 
 	<properties>
 		<arquillian.persistence.version>1.0.0.Alpha7</arquillian.persistence.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 </project>

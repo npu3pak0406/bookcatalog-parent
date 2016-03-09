@@ -1,6 +1,5 @@
 package com.softserve.manager.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -10,13 +9,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.softserve.dao.AuthorDAO;
 import com.softserve.dao.BookDAO;
+import com.softserve.dao.ReviewDAO;
 import com.softserve.manager.BookManager;
-import com.softserve.model.Author;
 import com.softserve.model.Book;
 import com.softserve.model.Review;
 
@@ -26,7 +26,7 @@ import com.softserve.model.Review;
 public class BookManagerImpl implements BookManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BookManagerImpl.class);
-	private static final Double ZERO = 0.0;
+	private static final Double ZERO = 0d;
 
 	@EJB
 	private BookDAO bookDAO;
@@ -34,35 +34,40 @@ public class BookManagerImpl implements BookManager {
 	@EJB
 	private AuthorDAO authorDAO;
 
+	@EJB
+	private ReviewDAO reviewDAO;
+
 	public BookManagerImpl() {
 	}
 
-	public List<Book> getAllBooksByAuthor(Author a) {
-		LOGGER.info("getAllBooksByAuthor(Author {})", a);
-		return bookDAO.findAllBooksByAuthor(a);
+	@Override
+	public List<Book> findBooksByAuthorId(Integer id) {
+		LOGGER.info("getAllBooksByAuthor(Author {})", id);
+		return bookDAO.findBooksByAuthorId(id);
 	}
 
 	@Override
-	public List<Book> returnAllBooks() {
-		LOGGER.info("start method returnAllBooks()");
+	public List<Book> findAllBooks() {
+		LOGGER.info("findAllBooks()");
 		return bookDAO.findAllBooks();
 	}
 
+	@Override
 	public List<Book> getAllAvailableBooks() {
-		LOGGER.info("start method getAllAvailableBooks()");
+		LOGGER.info("getAllAvailableBooks()");
 		return bookDAO.findAllAvailableBooks();
 	}
 
 	@Override
 	public List<Book> getBooksWithRating(Double rating) {
-		LOGGER.info("start getBooksWithRating(Integer {})", rating);
+		LOGGER.info("getBooksWithRating(Double {})", rating);
 		return bookDAO.findBooksWithRating(rating);
 	}
 
 	@Override
-	public Book findBookById(Integer id) {
-		LOGGER.info("start findBookById(Integer {})", id);
-		return bookDAO.findBookById(id);
+	public Book findById(Integer id) {
+		LOGGER.info("Book findById(Integer {})", id);
+		return bookDAO.readById(id);
 	}
 
 	@Override
@@ -78,36 +83,9 @@ public class BookManagerImpl implements BookManager {
 	}
 
 	@Override
-	public List<Book> findBooks(int pageNumber, int pageSize) {
-		LOGGER.info("findBooks(int {}, int {})", pageNumber, pageSize);
-		return bookDAO.findBooks(pageNumber, pageSize);
-	}
-
-	@Override
 	public void removeByPk(Integer id) {
-		LOGGER.info("removeByPk(Integer {})", id);
+		LOGGER.info("void removeByPk(Integer {})", id);
 		bookDAO.removeByPk(id);
-	}
-
-	public void calculateBookRate(Book book) {
-		LOGGER.info("calculateBookRate(Book {})", book);
-		Double sum = ZERO;
-		List<Review> reviews = book.getReviews();
-		List<Double> ratings = new ArrayList<Double>();
-
-		for (Review review : reviews) {
-			ratings.add((double) review.getRating());
-		}
-
-		if (!ratings.isEmpty()) {
-			for (Double rating : ratings) {
-				sum += rating;
-			}
-			book.setAverageRating(Math.floor((sum / (double) ratings.size()) * 100) / 100);
-
-		} else
-			book.setAverageRating(sum);
-		bookDAO.update(book);
 	}
 
 	@Override
@@ -123,9 +101,9 @@ public class BookManagerImpl implements BookManager {
 	}
 
 	@Override
-	public void removeAllByPk(List<Integer> pks) {
-		LOGGER.info("removeAllByPk(List<Integer> {})", pks);
-		bookDAO.removeAllbyId(pks);
+	public void removeBooks(List<Book> books) {
+		LOGGER.info("removeAllByPk(List<Integer> {})", books);
+		bookDAO.removeBooks(books);
 	}
 
 	@Override
@@ -150,6 +128,24 @@ public class BookManagerImpl implements BookManager {
 	public List<Book> findBooksByStatus(String status) {
 		LOGGER.info("List<Book> findBooksByStatus(String {})", status);
 		return bookDAO.findBooksByStatus(status);
+	}
+
+	@Override
+	public void calculateBookRate(Book book) {
+		LOGGER.info("calculateBookRate(Book {})", book);
+		
+		Double sum = ZERO;
+		List<Review> reviews = reviewDAO.findReviewsByBookId(book.getBookId());
+		
+		for (Review review : reviews) {
+			sum = sum + review.getRating();
+		}
+		if (CollectionUtils.isNotEmpty(reviews)) {
+			book.setAverageRating(Math.floor((sum / (double) reviews.size()) * 100) / 100);
+
+		} else
+			book.setAverageRating(sum);
+		bookDAO.update(book);
 	}
 
 }

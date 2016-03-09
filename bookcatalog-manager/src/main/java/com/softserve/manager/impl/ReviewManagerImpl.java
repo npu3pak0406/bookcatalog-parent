@@ -12,6 +12,7 @@ import javax.ejb.TransactionManagementType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.softserve.dao.BookDAO;
 import com.softserve.dao.ReviewDAO;
 import com.softserve.manager.ReviewManager;
 import com.softserve.model.Review;
@@ -26,6 +27,9 @@ public class ReviewManagerImpl implements ReviewManager {
 	@EJB
 	private ReviewDAO reviewDAO;
 
+	@EJB
+	private BookDAO bookDAO;
+
 	@Override
 	public void removeByPk(Integer id) {
 		LOGGER.info("removeByPk({})", id);
@@ -34,13 +38,13 @@ public class ReviewManagerImpl implements ReviewManager {
 
 	@Override
 	public void create(Review review) {
-		LOGGER.info("void save(Review {})", review);
+		LOGGER.info("void save(Review {})", review.getReviewId());
 		reviewDAO.create(review);
 	}
 
 	@Override
 	public void update(Review review) {
-		LOGGER.info("update(Review {})", review);
+		LOGGER.info("update(Review {})", review.getReviewId());
 		reviewDAO.update(review);
 	}
 
@@ -51,21 +55,15 @@ public class ReviewManagerImpl implements ReviewManager {
 	}
 
 	@Override
-	public List<Review> getReviewsByBookId(Integer id) {
+	public List<Review> findReviewsByBookId(Integer id) {
 		LOGGER.info("getReviewsByBookId({})", id);
-		return reviewDAO.getReviewsByBookId(id);
+		return reviewDAO.findReviewsByBookId(id);
 	}
 
 	@Override
-	public Integer getBookReviewsSize(int id) {
-		LOGGER.info("getBookReviewsSize(int{})", id);
-		return reviewDAO.countAllReviews(id);
-	}
-
-	@Override
-	public List<Review> findReviews(int pageNumber, int pageSize, int bookId) {
-		LOGGER.info("List<Review> findReviews({},{},{})", pageNumber, pageSize, bookId);
-		return reviewDAO.findReviews(pageNumber, pageSize, bookId);
+	public Integer countAllReviews(int bookId) {
+		LOGGER.info("getBookReviewsSize(int{})", bookId);
+		return reviewDAO.countAllReviews(bookId);
 	}
 
 	@Override

@@ -17,12 +17,24 @@ public interface ReviewManager {
 
 	public Review findReviewById(Integer id);
 
-	
-	public List<Review> getReviewsByBookId(Integer id);
+	/**
+	 * This method return list of book related to book which will be find by
+	 * book id
+	 * 
+	 * @param id
+	 *            - primary key of book
+	 */
+	public List<Review> findReviewsByBookId(Integer id);
 
-	public Integer getBookReviewsSize(int id);
+	/**
+	 * This method return number of review appropriate book
+	 * 
+	 * @param bookId
+	 *            - primary key of book
+	 * @return numbers of Reviews
+	 */
+	public Integer countAllReviews(int id);
 
-	public List<Review> findReviews(int pageNumber, int pageSize, int bookId);
 	
 	public List<Review> findAllReviews();
 

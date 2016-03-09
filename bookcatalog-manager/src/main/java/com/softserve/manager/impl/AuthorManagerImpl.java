@@ -5,23 +5,23 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.softserve.dao.AuthorDAO;
 import com.softserve.dao.BookDAO;
+import com.softserve.dao.ReviewDAO;
 import com.softserve.manager.AuthorManager;
 import com.softserve.model.Author;
 import com.softserve.model.Book;
+import com.softserve.model.Review;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
-@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class AuthorManagerImpl implements AuthorManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorManagerImpl.class);
@@ -34,18 +34,18 @@ public class AuthorManagerImpl implements AuthorManager {
 	@EJB
 	private BookDAO bookDAO;
 
-	public List<Author> findAllAuthors() {
-		LOGGER.info("List<Author> findAllAuthors()");
-		List<Author> authors = authorDAO.findAllAuthors();
-		return authors;
-	}
+	@EJB
+	private ReviewDAO reviewDAO;
 
 	public Author findById(Integer id) {
 		LOGGER.info("findById(Integer {})", id);
-		return authorDAO.findById(id);
+		Author author = authorDAO.readById(id);
+		author.getBooks().size();
+		return author;
 	}
 
-	public void removeByPk(Integer id) {
+	@Override
+	public void removeById(Integer id) {
 		LOGGER.info("void removeByPk(Integer {})", id);
 		authorDAO.removeByPk(id);
 	}
@@ -64,15 +64,21 @@ public class AuthorManagerImpl implements AuthorManager {
 	}
 
 	@Override
+	public List<Author> findAllAuthors() {
+		LOGGER.info("List<Author> findAllAuthors()");
+		return initBookList(authorDAO.findAllAuthors());
+	}
+
+	@Override
 	public Integer countAllAuthors() {
 		LOGGER.info("Integer countAllAuthors()");
 		return authorDAO.countAllAuthors();
 	}
 
 	@Override
-	public void removeAllByPk(List<Integer> pks) {
-		LOGGER.info("removeAllByPk(List<Integer> {})", pks);
-		authorDAO.removeAllById(pks);
+	public void removeAuthors(List<Author> authors) {
+		LOGGER.info("removeAllByPk(List<Integer> {})", authors);
+		authorDAO.removeAuthors(authors);
 
 	}
 
@@ -86,13 +92,15 @@ public class AuthorManagerImpl implements AuthorManager {
 		for (Author author : authors) {
 			sum = ZERO;
 			List<Double> ratings = new ArrayList<Double>();
-			List<Book> books = author.getBooks();
+			List<Book> books = bookDAO.findBooksByAuthorId(author.getAuthorId());
 
 			for (Book b : books) {
-				ratings.add(b.getAverageRating());
+				List<Review> reviews = reviewDAO.findReviewsByBookId(b.getBookId());
+				if (CollectionUtils.isNotEmpty(reviews)) {
+					ratings.add(b.getAverageRating());
+				}
 			}
-
-			if (!ratings.isEmpty()) {
+			if (CollectionUtils.isNotEmpty(ratings)) {
 				for (Double rating : ratings) {
 					sum += rating;
 				}
@@ -102,4 +110,46 @@ public class AuthorManagerImpl implements AuthorManager {
 		}
 	}
 
+	@Override
+	public void recalcRatingOndelete(Book book) {
+
+		LOGGER.info("recalcRatingOndelete(Book {})", book);
+
+		List<Author> authors = book.getAuthors();
+		Double sum = ZERO;
+		for (Author author : authors) {
+			sum = ZERO;
+			List<Double> ratings = new ArrayList<Double>();
+			List<Book> books = bookDAO.findBooksByAuthorId(author.getAuthorId());
+			for (Book b : books) {
+				List<Review> reviews = reviewDAO.findReviewsByBookId(b.getBookId());
+				if (CollectionUtils.isNotEmpty(reviews)) {
+					ratings.add(b.getAverageRating());
+				}
+			}
+			if (CollectionUtils.isNotEmpty(ratings)) {
+				for (Double rating : ratings) {
+					sum += rating;
+				}
+				if (ratings.size() == 1) {
+					author.setAverageRating(ZERO);
+				} else {
+					sum -= book.getAverageRating();
+					author.setAverageRating(Math.floor((sum / (double) (ratings.size() - 1)) * 100) / 100);
+				}
+				authorDAO.update(author);
+			} else {
+				author.setAverageRating(0.0);
+				authorDAO.update(author);
+			}
+		}
+	}
+
+	private List<Author> initBookList(List<Author> authors) {
+		LOGGER.info("initBookList{}", authors);
+		for (Author author : authors) {
+			author.getBooks().size();
+		}
+		return authors;
+	}
 }

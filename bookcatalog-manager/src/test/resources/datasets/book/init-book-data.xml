@@ -2,7 +2,7 @@
 
 <dataset>
 
-	<book bookId="101" name="Test1" createDate="2014-02-03 19:17:13" />
-	<book bookId="102" name="Test2" createDate="2014-02-03 19:17:13" />
+	<book bookId="301" name="Test1" createDate="2014-02-03 19:17:13" />
+	<book bookId="302" name="Test2" createDate="2014-02-03 19:17:13" />
 
 </dataset>
